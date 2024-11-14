@@ -1,0 +1,42 @@
+version: '3'
+services:
+  client:
+    build:
+      context: ./client  # Path ke folder aplikasi React (frontend)
+    volumes:
+      - ./client:/app  # Mount folder aplikasi React dari host ke container
+    ports:
+      - "3000:3000"  # Expose port 3000 untuk React
+    networks:
+      - app-network
+    depends_on:
+      - server  # Menunggu server (backend) untuk siap
+
+  server:
+    build:
+      context: ./server  # Path ke folder aplikasi Express (backend)
+    volumes:
+      - ./server:/app  # Mount folder aplikasi Express dari host ke container
+    ports:
+      - "5000:5000"  # Expose port 5000 untuk Express
+    networks:
+      - app-network
+    depends_on:
+      - mysql  # Menunggu MySQL untuk siap
+    command: ["npx", "nodemon", "server.js"]  # Jalankan aplikasi Express menggunakan nodemon
+
+  mysql:
+    image: bitnami/mysql:latest  # Menggunakan image MySQL dari Bitnami
+    environment:
+      MYSQL_ROOT_PASSWORD: Tuhiu2003  # Password untuk root
+      MYSQL_DATABASE: db-ibu-hamil  # Nama database yang akan dibuat
+      MYSQL_USER: cinnamon  # Username pengguna yang dibuat
+      MYSQL_PASSWORD: Tuhiu2003  # Password untuk user
+    ports:
+      - "3307:3306"  # Expose port 3306 untuk MySQL ke port 3307 di host
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
