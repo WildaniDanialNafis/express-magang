@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 const MobileUser = require('../models/MobileUser');
 
-exports.getAllUsers = async (req, res) => {
+exports.getAllMobileUser = async (req, res) => {
     try {
         const users = await MobileUser.findAll();
         res.status(200).json({
@@ -15,14 +15,9 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-exports.createUser = async (req, res) => {
+exports.createMobileUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        // Validasi input (misalnya email dan password)
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Email and password are required' });
-        }
 
         // Enkripsi password menggunakan bcrypt
         const pepper = process.env.PEPPER || 'defaultPepperValue';
@@ -45,7 +40,7 @@ exports.createUser = async (req, res) => {
 };
 
 
-exports.updateUser = async (req, res) => {
+exports.updateMobileUser = async (req, res) => {
     const { id } = req.params;
     const { email, password } = req.body;
 
@@ -57,14 +52,12 @@ exports.updateUser = async (req, res) => {
         const user = await MobileUser.findById(id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        let updatedUser;
-
         const pepper = process.env.PEPPER || 'defaultPepperValue';
         const passwordWithPepper = password + pepper;
         const hashedPassword = await bcrypt.hash(passwordWithPepper, saltRounds);
 
         // Update password
-        updatedUser = await MobileUser.update(id, email, hashedPassword, user.createdAt);
+        const updatedUser = await MobileUser.update(id, email, hashedPassword, user.createdAt);
         console.log(updatedUser);
 
         res.status(200).json({
@@ -76,7 +69,7 @@ exports.updateUser = async (req, res) => {
     }
 }
 
-exports.getUserById = async (req, res) => {
+exports.getMobileUserById = async (req, res) => {
     const { id } = req.params;
     try {
         const user = await MobileUser.findById(id);
@@ -90,7 +83,7 @@ exports.getUserById = async (req, res) => {
     }
 };
 
-exports.deleteUser = async (req, res) => {
+exports.deleteMobileUser = async (req, res) => {
     const { id } = req.params;
     try {
         const user = await MobileUser.findById(id);

@@ -41,6 +41,16 @@ class MobileUser {
             });
         });
     }
+    
+    static findByEmail(email) {
+        return new Promise((resolve, reject) => {
+            const query = `SELECT * FROM Mobile_Users WHERE email = ?`;
+            connection.query(query, [email], (err, results) => {
+                if (err) reject(err);
+                else resolve(results.length ? new MobileUser(results[0].id, results[0].email, results[0].password, results[0].createdAt, results[0].updatedAt) : null);
+            });
+        });
+    }
 
     static update(id, email, password, createdAt) {
         return new Promise((resolve, reject) => {

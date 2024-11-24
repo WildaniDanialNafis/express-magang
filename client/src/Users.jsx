@@ -1,14 +1,19 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import config from "./config";
+import useAuth from "./token";
+import { useNavigate } from "react-router-dom";
 
 const Users = () => {
+  useAuth();
+
   const [users, setUsers] = useState([]);
   const [showAddEditModal, setShowAddEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userForm, setUserForm] = useState({ id: "", email: "", password: "" });
   const [isEdit, setIsEdit] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState(null);
+  const navigate = useNavigate();
 
   // Fungsi untuk mendapatkan data pengguna
   const handleGetUsers = async () => {
@@ -23,7 +28,7 @@ const Users = () => {
     }
 
     try {
-      const response = await axios.get(config.url + "/api/mobile_users", {
+      const response = await axios.get(config.url + "/api/mobile-users", {
         headers: {
           Authorization: `Bearer ${token}`, // Menyertakan token dalam header
         },
@@ -79,7 +84,7 @@ const Users = () => {
     if (isEdit) {
       try {
         // Mengirim request PUT untuk mengedit pengguna
-        const response = await axios.put(config.url + `/api/mobile_users/edit/${userForm.id}`, {
+        const response = await axios.put(config.url + `/api/mobile-users/edit/${userForm.id}`, {
           email: userForm.email,
           password: userForm.password,
         }, {
@@ -102,7 +107,7 @@ const Users = () => {
     } else {
       try {
         // Mengirim request POST untuk menambah pengguna
-        const response = await axios.post(config.url + "/api/mobile_users/add", {
+        const response = await axios.post(config.url + "/api/mobile-users/add", {
           email: userForm.email,
           password: userForm.password,
         }, {
@@ -141,7 +146,7 @@ const Users = () => {
     }
     try {
       // Mengirim request DELETE untuk menghapus pengguna
-      await axios.delete(config.url + `/api/mobile_users/delete/${deleteUserId}`, {
+      await axios.delete(config.url + `/api/mobile-users/delete/${deleteUserId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -155,12 +160,18 @@ const Users = () => {
     handleModalClose();
   };
 
+  const logOut = () => {
+    localStorage.clear();
+    navigate('/');
+  }
+
   return (
     <div className="container-fluid vh-100 d-flex bg-body-tertiary">
       <div className="container mx-auto px-8">
         <div className="card border-light shadow-sm rounded mt-5">
           <div className="card-body">
             <p className="card-title text-dark mb-0">You're logged in!</p>
+            <button className="btn btn-danger" type="button" onClick={() => logOut()}>Log Out</button>
           </div>
         </div>
 
